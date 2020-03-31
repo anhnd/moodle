@@ -1080,6 +1080,50 @@ func (m *MoodleApi) AddUser(firstName, lastName, email, username, password strin
 	return int64(data[0]["id"].(float64)), nil
 }
 
+func (m *MoodleApi) AddCourse(fullName string, shortName string, categoryId int64, courseId string) (int64, error) {
+	var l string
+	l = fmt.Sprintf("%swebservice/rest/server.php?wstoken=%s&wsfunction=%s&moodlewsrestformat=json&courses[0][fullname]=%s&courses[0][shortnamme]=%s&courses[0][categoryid]=%d&courses[0][courseid]=%s", m.base, m.token, "core_course_create_courses",
+		url.QueryEscape(fullName),
+		url.QueryEscape(shortName),
+		categoryId,
+		url.QueryEscape(courseId))
+
+	//fmt.Println(l)
+	m.log.Debug("Fetch: %s", l)
+
+	body, _, _, err := m.fetch.GetUrl(l)
+	fmt.Println(body)
+	if err != nil {
+		return 0, err
+	}
+
+	if strings.HasPrefix(body, "{\"exception\":\"") {
+		message := readError(body)
+		return 0, errors.New(message + ". " + l)
+	}
+
+	type SiteInfo struct {
+		Sitename  string
+		Firstname string
+		Lastname  string
+		Userid    int64
+	}
+
+	var data []map[string]interface{}
+
+	if err := json.Unmarshal([]byte(body), &data); err != nil {
+		return 0, errors.New("Server returned unexpected response. " + err.Error())
+	}
+	if len(data) != 1 {
+		return 0, errors.New("Server returned unexpected response. " + err.Error())
+	}
+	if _, ok := data[0]["id"]; !ok {
+		return 0, errors.New("Server returned unexpected response. ID is missing. " + err.Error())
+	}
+
+	return int64(data[0]["id"].(float64)), nil
+}
+
 // UpdateUser updates the basic details of a moodle account. Requires permission for "core_user_update_users". Password is only updated if password is not blank.
 func (m *MoodleApi) UpdateUser(id int64, firstName, lastName, email, username, password string) error {
 
