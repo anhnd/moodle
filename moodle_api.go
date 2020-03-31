@@ -1082,7 +1082,7 @@ func (m *MoodleApi) AddUser(firstName, lastName, email, username, password strin
 
 func (m *MoodleApi) AddCourse(fullName string, shortName string, categoryId int64, courseId string) (int64, error) {
 	var l string
-	l = fmt.Sprintf("%swebservice/rest/server.php?wstoken=%s&wsfunction=%s&moodlewsrestformat=json&courses[0][fullname]=%s&courses[0][shortname]=%s&courses[0][categoryid]=%d&courses[0][idnumber]=%s&courses[0][format]=topics&courses[0][numsections]=4&courses[0][lang]=vi", m.base, m.token, "core_course_create_courses",
+	l = fmt.Sprintf("%swebservice/rest/server.php?wstoken=%s&moodlewssettinglang=vi&wsfunction=%s&moodlewsrestformat=json&courses[0][fullname]=%s&courses[0][shortname]=%s&courses[0][categoryid]=%d&courses[0][idnumber]=%s&courses[0][format]=topics&courses[0][numsections]=4", m.base, m.token, "core_course_create_courses",
 		url.QueryEscape(fullName),
 		url.QueryEscape(shortName),
 		categoryId,
