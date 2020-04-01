@@ -1092,7 +1092,7 @@ func (m *MoodleApi) AddCourse(fullName string, shortName string, categoryId int6
 	m.log.Debug("Fetch: %s", l)
 
 	body, _, _, err := m.fetch.GetUrl(l)
-	fmt.Println(body)
+	// fmt.Println(body)
 	if err != nil {
 		return 0, err
 	}
