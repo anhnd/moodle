@@ -1039,7 +1039,7 @@ func (m *MoodleApi) AddUserOauth2(firstName, lastName, email, username string) (
 	m.log.Debug("Fetch: %s", l)
 
 	body, _, _, err := m.fetch.GetUrl(l)
-	fmt.Println(body)
+	// fmt.Println(body)
 	if err != nil {
 		return 0, err
 	}
