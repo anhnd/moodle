@@ -1023,6 +1023,49 @@ func (m *MoodleApi) AddGroupToCourse(courseId int64, groupName, groupDescription
 
 }
 
+func (m *MoodleApi) EditUser(userID int64, firstName, lastName string) (int64, error) {
+
+	var l string
+	l = fmt.Sprintf("%swebservice/rest/server.php?wstoken=%s&wsfunction=%s&moodlewsrestformat=json&users[0][firstname]=%s&users[0][lastname]=%s&users[0][id]=%d", m.base, m.token, "core_user_update_users",
+		url.QueryEscape(firstName),
+		url.QueryEscape(lastName),
+		userID)
+	//fmt.Println(l)
+	m.log.Debug("Fetch: %s", l)
+
+	body, _, _, err := m.fetch.GetUrl(l)
+	// fmt.Println(body)
+	if err != nil {
+		return 0, err
+	}
+
+	if strings.HasPrefix(body, "{\"exception\":\"") {
+		message := readError(body)
+		return 0, errors.New(message + ". " + l)
+	}
+
+	type SiteInfo struct {
+		Sitename  string
+		Firstname string
+		Lastname  string
+		Userid    int64
+	}
+
+	var data []map[string]interface{}
+
+	if err := json.Unmarshal([]byte(body), &data); err != nil {
+		return 0, errors.New("Server returned unexpected response. " + err.Error())
+	}
+	if len(data) != 1 {
+		return 0, errors.New("Server returned unexpected response. " + err.Error())
+	}
+	if _, ok := data[0]["id"]; !ok {
+		return 0, errors.New("Server returned unexpected response. ID is missing. " + err.Error())
+	}
+
+	return int64(data[0]["id"].(float64)), nil
+}
+
 func (m *MoodleApi) AddUserOauth2(firstName, lastName, email, username string) (int64, error) {
 
 	if strings.Index(email, "@") < 0 {
