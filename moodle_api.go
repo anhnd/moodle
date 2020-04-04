@@ -1056,12 +1056,6 @@ func (m *MoodleApi) EditUser(userID int64, firstName, lastName string) error {
 	if err := json.Unmarshal([]byte(body), &data); err != nil {
 		return errors.New("Server returned unexpected response. " + err.Error())
 	}
-	if len(data) != 1 {
-		return errors.New("Server returned unexpected response. " + err.Error())
-	}
-	if _, ok := data[0]["id"]; !ok {
-		return errors.New("Server returned unexpected response. ID is missing. " + err.Error())
-	}
 
 	return nil
 }
